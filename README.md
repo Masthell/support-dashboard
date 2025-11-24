@@ -18,3 +18,5 @@ source venv/bin/activate  # или venv\Scripts\activate на Windows
 pip install -r requirements.txt
 uvicorn main:app --reload
 ```
+
+pip install email-validator uvicorn app.main:app --reload
