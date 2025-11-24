@@ -2,9 +2,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.models.user import Base  # Импортируем Base из моделей
 
-
 # URL базы данных из переменных окружения
-DATABASE_URL = "sqlite:///./support.db"
+DATABASE_URL = "mysql+pymysql://root:#mila2008@localhost:3306/support_db"
 
 # Движок БД
 engine = create_engine(DATABASE_URL)
