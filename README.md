@@ -57,23 +57,6 @@ alembic upgrade head
    Документация API: http://localhost:8000/docs
    ReDoc: http://localhost:8000/redoc
 
-📁 Структура проекта примерная
-support-dashboard/
-├── 📚 docs/ # Документация и конфигурация
-│ ├── .env.example # Шаблон переменных окружения
-│ └── alembic.example.ini # Шаблон Alembic
-├── 💻 backend/ # FastAPI приложение
-│ ├── app/
-│ │ ├── core/config.py # Управление настройками
-│ │ ├── database.py # Подключение к БД
-│ │ └── models # SQLAlchemy модели
-│ └── migrations/ # Миграции базы данных
-├── ⚙️ requirements.txt # Python зависимости
-├── 📖 README.md # Этот файл
-├── 🚫 .gitignore # Правила игнорирования Git
-├── 🔒 .env # ВАШИ настройки (только локально)
-└── 🔒 alembic.ini # ВАША конфигурация БД (только локально)
-
 🛡️ Безопасность конфигурации
 Файлы, которые НИКОГДА нельзя коммитить:
 .env - Содержит пароли БД и секретные ключи
