@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException  
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession 
+from sqlalchemy import select  
 from app.database import get_db
 from app.models.user import User  
 from app.schemas.user import UserLogin, UserCreate, UserResponse
@@ -9,8 +10,13 @@ from app.core.dependencies import get_current_user
 router = APIRouter()  
 
 @router.post("/login")
-def login(user_data: UserLogin, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == user_data.email).first()
+async def login(  
+    user_data: UserLogin, 
+    db: AsyncSession = Depends(get_db)  
+):
+
+    result = await db.execute(select(User).where(User.email == user_data.email))
+    user = result.scalar_one_or_none()
     
     if not user or not verify_password(user_data.password, user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -27,8 +33,13 @@ def login(user_data: UserLogin, db: Session = Depends(get_db)):
     }
 
 @router.post("/register", response_model=UserResponse)
-def register(user_data: UserCreate, db: Session = Depends(get_db)):
-    existing_user = db.query(User).filter(User.email == user_data.email).first()
+async def register(  
+    user_data: UserCreate, 
+    db: AsyncSession = Depends(get_db)  
+):
+    result = await db.execute(select(User).where(User.email == user_data.email))
+    existing_user = result.scalar_one_or_none()
+    
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
@@ -42,19 +53,20 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     )
 
     db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+    await db.commit()  
+    await db.refresh(db_user) 
 
     return db_user
 
 @router.get("/me", response_model=UserResponse)
-def get_current_user_info(
+async def get_current_user_info(  
     current_user: dict = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: AsyncSession = Depends(get_db)  
 ):
+    user_id = int(current_user["sub"])
     
-    user_id = int(current_user["sub"]) # из токена айди пользователя получить
-    user = db.query(User).filter(User.id == user.id).first()
+    result = await db.execute(select(User).where(User.id == user_id))  
+    user = result.scalar_one_or_none()
 
     if not user:
         raise HTTPException(status_code=404, detail="User not found")

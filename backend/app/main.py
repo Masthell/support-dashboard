@@ -1,16 +1,47 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy import text
-from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.database import get_db, engine
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.models.user import User  
+from sqlalchemy import select  
+from contextlib import asynccontextmanager
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    print("Starting FastAPI application...")
+    yield
+    # Shutdown
+    print("Shutting down FastAPI application...")
+    await engine.dispose()
 
 app = FastAPI(
     title="Support System API",
     description="API for Support Dashboard",
+    lifespan=lifespan,
     version="1.0.0"
 )
 
+# тестовый эндпоинт
+@app.get("/health")
+async def health_check(db: AsyncSession = Depends(get_db)):
+    """Проверка здоровья приложения"""
+    try:
+        await db.execute(text("SELECT 1"))
+        
+        return {
+            "status": "healthy",
+            "database": "connected",
+            "environment": "development",
+            "timestamp": "2024-01-01T00:00:00Z"
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy",
+            "database": "disconnected",
+            "error": str(e)
+        }
 
 @app.get("/")
 async def root():
@@ -26,42 +57,6 @@ async def info():
         "status": "running"
     }
 
-@app.get("/test-db")
-async def test_db():
-    """Тест подключения к БД"""
-    try:
-        with engine.connect() as conn:
-            result = conn.execute(text("SELECT 1"))
-            return {
-                "status": "Database connected successfully",
-                "database": "MySQL",
-                "test_query": "SELECT 1 - OK",
-                "connection_test": True
-            }
-    except Exception as e:
-        return {
-            "status": "❌ Database connection failed",
-            "error": str(e)
-        }
-
-@app.get("/health")
-async def health_check(db: Session = Depends(get_db)):
-    """Полная проверка здоровья приложения"""
-    try:
-        db.execute(text("SELECT 1"))
-        
-        return {
-            "status": "healthy",
-            "database": "connected",
-            "environment": "development",
-            "timestamp": "2024-01-01T00:00:00Z"
-        }
-    except Exception as e:
-        return {
-            "status": "unhealthy",
-            "database": "disconnected",
-            "error": str(e)
-        }
 
 @app.get("/api/status")
 async def api_status():
@@ -87,8 +82,4 @@ from app.routers import users, tickets, auth
 
 app.include_router(users.router, prefix="/api")
 app.include_router(tickets.router, prefix="/api")
-
-from app.routers import users, tickets, auth  
-app.include_router(users.router, prefix="/api")
-app.include_router(tickets.router, prefix="/api") 
 app.include_router(auth.router, prefix="/auth") 
