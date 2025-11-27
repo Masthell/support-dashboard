@@ -5,6 +5,7 @@ from app.models.ticket import Ticket
 from app.models.user import User
 from app.schemas.ticket import TicketCreate, TicketResponse
 from app.core.dependencies import get_current_user
+from fastapi import Query
 
 router = APIRouter()
 
@@ -30,11 +31,37 @@ def create_ticket(
     db.refresh(ticket)
     return ticket
 
-
 @router.get("/tickets")
-def get_tickets(db: Session = Depends(get_db)):
-    tickets = db.query(Ticket).all()
-    return {"tickets": tickets}
+def get_tickets(
+    status: str = Query(None, description="Filter by status"),
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(25, ge=1, le=100, description="Items per page"), 
+    db: Session = Depends(get_db)
+):
+
+    query = db.query(Ticket)
+    
+    # ФИЛЬТРАЦИЯ по статусу
+    if status:
+        query = query.filter(Ticket.status == status)
+    
+    # ПАГИНАЦИЯ
+    skip = (page - 1) * page_size
+    tickets = query.offset(skip).limit(page_size).all()
+    
+    total = query.count()
+    
+    return {
+        "tickets": tickets,
+        "pagination": {
+            "page": page,
+            "page_size": page_size,
+            "total": total,
+            "pages": (total + page_size - 1) // page_size  
+        }
+    }
+
+
 
 # READ ONE - один тикет по ID 
 @router.get("/tickets/{ticket_id}")
