@@ -7,12 +7,8 @@ from app.schemas.ticket import TicketCreate, TicketResponse
 
 router = APIRouter()
 
-
-@router.post("/tickets", response_model=TicketResponse)  # ← схема для ответа
+@router.post("/tickets", response_model=TicketResponse)  # схема для ответа
 def create_ticket(ticket_data: TicketCreate, db: Session = Depends(get_db)):
-    # ticket_data уже содержит title, description, user_id
-    # И они УЖЕ проверены автоматически!
-    
     # Проверяем что пользователь существует
     user = db.query(User).filter(User.id == ticket_data.user_id).first()
     if not user:
@@ -26,14 +22,12 @@ def create_ticket(ticket_data: TicketCreate, db: Session = Depends(get_db)):
     db.add(ticket)
     db.commit()
     db.refresh(ticket)
-    return ticket  # ← Возвращаем сам объект, схема его преобразует
+    return ticket  
 
 @router.get("/tickets")
 def get_tickets(db: Session = Depends(get_db)):
     tickets = db.query(Ticket).all()
     return {"tickets": tickets}
-
-
 
 # READ ONE - один тикет по ID 
 @router.get("/tickets/{ticket_id}")

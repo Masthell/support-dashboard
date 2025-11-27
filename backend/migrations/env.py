@@ -7,11 +7,9 @@ import sys
 
 from dotenv import load_dotenv
 
-# Загружаем .env из корня проекта (support-dashboard/.env)
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 load_dotenv(os.path.join(project_root, '.env'))
 
-# Добавляем путь к проекту
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from app.models import Base

@@ -3,8 +3,7 @@ from typing import Optional
 
 class Settings(BaseSettings):
 
-    # Обязательные настройки (будут искаться в .env файле)
-    DATABASE_URL: str  # URL для подключения к базе данных
+    DATABASE_URL: str  
     SECRET_KEY: str    # Секретный ключ для JWT токенов
     
     # Настройки со значениями по умолчанию
@@ -12,8 +11,8 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30       # Время жизни токена
     
     class Config:
-        env_file = ".env"  # Указываем файл с переменными окружения
-        case_sensitive = False  # Регистронезависимые переменные
+        env_file = ".env"  
+        case_sensitive = False  
 
 # Создаём экземпляр настроек для импорта в других модулях
 settings = Settings()

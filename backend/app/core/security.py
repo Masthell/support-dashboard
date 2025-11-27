@@ -5,9 +5,9 @@ from app.core.config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def hash_password(password: str) -> str:  # ← исправлено pasword → password
+def hash_password(password: str) -> str: 
     """Хеширует пароль"""
-    return pwd_context.hash(password)  # ← теперь password определена
+    return pwd_context.hash(password)  
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Проверяет пароль хешем"""

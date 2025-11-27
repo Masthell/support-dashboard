@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException  # ← все импорты
+from fastapi import APIRouter, Depends, HTTPException  
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.models.user import User  # ← импорт модели
-from app.schemas.user import UserLogin  # ← импорт схемы
+from app.models.user import User  
+from app.schemas.user import UserLogin  
 from app.core.security import verify_password, create_access_token
 
-router = APIRouter()  # ← создаем router!
+router = APIRouter()  
 
 @router.post("/login")
 def login(user_data: UserLogin, db: Session = Depends(get_db)):

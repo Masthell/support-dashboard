@@ -1,20 +1,33 @@
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
-sqlalchemy==2.0.23
-alembic==1.12.1
-psycopg2-binary==2.9.9
-python-jose[cryptography]==3.3.0
-passlib[bcrypt]==1.7.4
-python-multipart==0.0.6
-pydantic==2.5.0
-email-validator==2.1.0
+# Веб-фреймворк и сервер
+fastapi==0.121.3
+uvicorn==0.38.0
+starlette==0.50.0
 
-pydantic-settings==2.0.3
-psycopg==3.1.10
-pydantic-settings==2.0.3
-asyncpg==0.28.0
-psycopg==3.1.10
+# База данных и ORM
+sqlalchemy==2.0.44
+alembic==1.17.2
+psycopg2-binary==2.9.11
+asyncpg==0.31.0
 
+# Аутентификация и безопасность
+python-jose==3.5.0
+passlib==1.7.4
+bcrypt==4.0.1
+cryptography==46.0.3
 
-пип инсталлы
-pip install python-dotenv pydantic-settings
+# Валидация и данные
+pydantic==2.12.4
+pydantic-core==2.41.5
+pydantic-settings==2.12.0
+email-validator==2.3.0
+
+# Вспомогательные
+python-multipart==0.0.20
+python-dotenv==1.2.1
+anyio==4.11.0
+httpx==0.28.1
+
+# Дополнительные зависимости
+annotated-types==0.7.0
+typing-extensions==4.15.0
+greenlet==3.2.4
