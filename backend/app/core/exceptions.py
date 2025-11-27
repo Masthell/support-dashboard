@@ -56,3 +56,8 @@ class InvalidTokenException(UnauthorizedException):
 class NotAuthenticatedException(UnauthorizedException):
     def __init__(self):
         super().__init__(detail="Not authenticated", error_code="NOT_AUTHENTICATED")
+
+class ForbiddenException(BaseAPIException):
+    """Доступ запрещен"""
+    def __init__(self, detail: str = "Forbidden", error_code: str = "FORBIDDEN"):
+        super().__init__(status_code=status.HTTP_403_FORBIDDEN, detail=detail, error_code=error_code)

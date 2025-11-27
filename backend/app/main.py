@@ -85,8 +85,9 @@ async def config_test():
 
 
 # Подключаем роутеры
-from app.routers import users, tickets, auth
+from app.routers import users, tickets, auth, admin
 
 app.include_router(users.router, prefix="/api")
 app.include_router(tickets.router, prefix="/api")
 app.include_router(auth.router, prefix="/auth") 
+app.include_router(admin.router, prefix="/api")

@@ -148,3 +148,15 @@ async def get_my_tickets(
     tickets = result.scalars().all()
     
     return {"tickets": tickets}
+
+@router.get("/operator/tickets") 
+def operator_tickets(current_user: dict = Depends(get_current_user)):
+    if current_user.get("role") not in ["admin", "operator"]:
+        raise HTTPException(403, "Operator access required")
+    return {"message": "Operator tickets - все тикеты системы"}
+
+@router.put("/operator/tickets/{ticket_id}/assign")
+def assign_ticket(ticket_id: int, current_user: dict = Depends(get_current_user)):
+    if current_user.get("role") not in ["admin", "operator"]:
+        raise HTTPException(403, "Operator access required")
+    return {"message": f"Ticket {ticket_id} assigned to operator"}
