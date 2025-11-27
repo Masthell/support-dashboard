@@ -4,25 +4,32 @@ from app.database import get_db
 from app.models.ticket import Ticket
 from app.models.user import User
 from app.schemas.ticket import TicketCreate, TicketResponse
+from app.core.dependencies import get_current_user
 
 router = APIRouter()
 
-@router.post("/tickets", response_model=TicketResponse)  # схема для ответа
-def create_ticket(ticket_data: TicketCreate, db: Session = Depends(get_db)):
-    # Проверяем что пользователь существует
-    user = db.query(User).filter(User.id == ticket_data.user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+# эндпоинт создания тикета:
+@router.post("/tickets", response_model=TicketResponse)
+def create_ticket(
+    ticket_data: TicketCreate,  # данные из JSON тела
+    current_user: dict = Depends(get_current_user),  # зависимость
+    db: Session = Depends(get_db)
+):
+    # User ID теперь из токена, а не из запроса
+    user_id = int(current_user["sub"])
     
     ticket = Ticket(
         title=ticket_data.title,
-        description=ticket_data.description, 
-        user_id=ticket_data.user_id
+        description=ticket_data.description,
+        user_id=user_id,  # ← из токена, а не из ticket_data!
+        status="open",
+        priority="medium"
     )
     db.add(ticket)
     db.commit()
     db.refresh(ticket)
-    return ticket  
+    return ticket
+
 
 @router.get("/tickets")
 def get_tickets(db: Session = Depends(get_db)):
@@ -84,3 +91,12 @@ def delete_ticket(ticket_id: int, db: Session = Depends(get_db)):
     db.delete(ticket)
     db.commit()
     return {"message": f"Ticket {ticket_id} deleted successfully"}
+
+@router.get("/my-tickets")
+def get_my_tickets(
+    current_user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    user_id = int(current_user["sub"])
+    tickets = db.query(Ticket).filter(Ticket.user_id == user_id).all()
+    return {"tickets": tickets}
