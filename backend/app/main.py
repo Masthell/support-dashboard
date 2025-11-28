@@ -1,60 +1,90 @@
-from fastapi import FastAPI, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from app import models, schemas
+from fastapi import FastAPI, Depends
+from sqlalchemy import text
+from app.core.config import settings
 from app.database import get_db, engine
+from sqlalchemy.ext.asyncio import AsyncSession
+from contextlib import asynccontextmanager
+from app.core.error_handlers import setup_exception_handlers
+from datetime import datetime
 
-# Создаем таблицы
-models.Base.metadata.create_all(bind=engine)
+# Управление событиями запуска и выключения приложений
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Starting FastAPI application...")
+    yield
+    print("Shutting down FastAPI application...")
+    await engine.dispose()
 
 app = FastAPI(
-    title="Support Dashboard API",
-    description="API для системы поддержки пользователей",
+    title="Support System API",
+    description="API for Support Dashboard",
+    lifespan=lifespan,
     version="1.0.0"
 )
 
-# Простой эндпоинт для проверки
+# Настройка глобальной обработки исключений
+setup_exception_handlers(app)
+
+
+# тестовый эндпоинт
+@app.get("/health")
+async def health_check(db: AsyncSession = Depends(get_db)):
+    """Проверка здоровья приложения"""
+    try:
+        await db.execute(text("SELECT 1")) # Тестовый запрос для проверки БД
+        
+        return {
+            "status": "healthy",
+            "database": "connected",
+            "environment": "development",
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy",
+            "database": "disconnected",
+            "error": str(e)
+        }
+
+# Корневая точка с приветственным сообщением
 @app.get("/")
-def read_root():
+async def root():
     return {"message": "Welcome to Support Dashboard API"}
 
-# Эндпоинт для получения всех пользователей
-@app.get("/users/", response_model=list[schemas.UserResponse])
-def get_users(db: Session = Depends(get_db)):
-    users = db.query(models.User).all()
-    return users
+@app.get("/info")
+async def info():
+    """Информация  настройках"""
+    return {
+        "app_name": "Support Dashboard",
+        "algorithm": settings.ALGORITHM,
+        "token_expire_minutes": settings.ACCESS_TOKEN_EXPIRE_MINUTES,
+        "status": "running"
+    }
 
-# Эндпоинт для создания пользователя
-@app.post("/users/", response_model=schemas.UserResponse, status_code=status.HTTP_201_CREATED)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    # Проверяем, существует ли пользователь с таким email
-    db_user = db.query(models.User).filter(models.User.email == user.email).first()
-    if db_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
-        )
-    
-    # Создаем нового пользователя (пока без хэширования пароля)
-    db_user = models.User(
-        email=user.email,
-        password=user.password,  # В будущем нужно хэшировать!
-        full_name=user.full_name,
-        role=user.role
-    )
-    
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    
-    return db_user
 
-# Эндпоинт для получения пользователя по ID
-@app.get("/users/{user_id}", response_model=schemas.UserResponse)
-def get_user(user_id: int, db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.id == user_id).first()
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
-    return user
+@app.get("/api/status")
+async def api_status():
+    return {
+        "api": "Support Dashboard API",
+        "version": "1.0",
+        "status": "active"
+    }
+
+@app.get("/config-test")
+async def config_test():
+    """Тест загрузки конфигурации (безопасный)"""
+    return {
+        "algorithm": settings.ALGORITHM,
+        "token_expire_minutes": settings.ACCESS_TOKEN_EXPIRE_MINUTES,
+        "secret_key_length": len(settings.SECRET_KEY),
+        "database_configured": bool(settings.DATABASE_URL),
+    }
+
+
+# Подключаем роутеры
+from app.routers import users, tickets, auth, admin
+
+app.include_router(users.router, prefix="/api")
+app.include_router(tickets.router, prefix="/api")
+app.include_router(auth.router, prefix="/auth") 
+app.include_router(admin.router, prefix="/api")

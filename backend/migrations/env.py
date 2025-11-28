@@ -5,13 +5,20 @@ from alembic import context
 import os
 import sys
 
-# Добавляем корневую директорию проекта в Python path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+from dotenv import load_dotenv
 
-# Теперь импортируем Base
-from backend.app.models import Base
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+load_dotenv(os.path.join(project_root, '.env'))
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+
+from app.models import Base
 
 config = context.config
+
+database_url = os.getenv('DATABASE_URL')
+if database_url:
+    config.set_main_option('sqlalchemy.url', database_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
@@ -19,6 +26,7 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 def run_migrations_offline() -> None:
+    """Run migrations in 'offline' mode."""
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
