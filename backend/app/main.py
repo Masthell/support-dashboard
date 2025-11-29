@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from contextlib import asynccontextmanager
 from app.core.error_handlers import setup_exception_handlers
 from datetime import datetime
+from fastapi.middleware.cors import CORSMiddleware
 
 # Управление событиями запуска и выключения приложений
 @asynccontextmanager
@@ -25,6 +26,16 @@ app = FastAPI(
 # Настройка глобальной обработки исключений
 setup_exception_handlers(app)
 
+
+
+# Настройка CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://localhost:8000"], 
+    allow_credentials=True,
+    allow_methods=["*"],  
+    allow_headers=["*"],  
+)
 
 # тестовый эндпоинт
 @app.get("/health")

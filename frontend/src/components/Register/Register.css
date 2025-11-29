@@ -12,7 +12,6 @@
   text-align: center;
 }
 
-/* Используем те же стили что и для логина */
 .logo-section {
   text-align: center;
   margin-bottom: 2.5rem;
@@ -30,8 +29,8 @@
   line-height: 1.1;
   margin-bottom: 0.5rem;
   color: white;
-  box-sizing: content-box; /* ← ДОБАВЬ ЭТУ СТРОКУ */
-  white-space: nowrap; /* ← И ЭТУ, чтобы текст не переносился */
+  box-sizing: content-box; 
+  white-space: nowrap; 
 }
 
 .subtitle {
