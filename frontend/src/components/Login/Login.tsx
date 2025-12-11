@@ -8,11 +8,13 @@ function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(""); // новое состояние для успешного входа
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setSuccess("");
 
     const loginData: LoginData = {
       email: email.trim(),
@@ -29,8 +31,12 @@ function Login() {
         localStorage.setItem("user_role", response.role || "");
 
         console.log("Успешный вход!", response);
-        alert("Вход выполнен успешно!");
-        window.location.href = "/dashboard";
+        setSuccess("Вход выполнен успешно! Перенаправляем на панель...");
+
+        // Переход через 1.5 секунды
+        setTimeout(() => {
+          window.location.href = "/dashboard";
+        }, 1500);
       } else {
         setError(response.detail || "Ошибка входа");
       }
@@ -52,7 +58,7 @@ function Login() {
       <div className="login-content">
         <div className="logo-section">
           <img src="/vite.png" className="logo" alt="logo" />
-          <h1>Support Dashboard</h1>
+          <h1>Monitoring Control</h1>
         </div>
 
         <form className="login-form" onSubmit={handleSubmit}>
@@ -80,6 +86,7 @@ function Login() {
             />
           </div>
 
+          {/* Ошибка */}
           {error && (
             <div
               style={{
@@ -92,6 +99,22 @@ function Login() {
               }}
             >
               {error}
+            </div>
+          )}
+
+          {/* Успех */}
+          {success && (
+            <div
+              style={{
+                color: "#33a728",
+                backgroundColor: "rgba(51, 167, 40, 0.1)",
+                padding: "0.75rem",
+                borderRadius: "8px",
+                marginBottom: "1rem",
+                border: "1px solid rgba(51, 167, 40, 0.3)",
+              }}
+            >
+              {success}
             </div>
           )}
 

@@ -112,7 +112,7 @@ async def update_user_role(
         raise HTTPException(403, "Admin access required")
     
     # Подтвердить роль
-    valid_roles = ["user", "operator", "manager", "admin"]
+    valid_roles = ["user", "admin"]
     new_role = role_data.get("role")
     if new_role not in valid_roles:
         raise HTTPException(400, f"Invalid role. Must be one of: {valid_roles}")

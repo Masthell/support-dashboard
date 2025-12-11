@@ -3,11 +3,9 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from app.core.security import verify_token
 from app.core.exceptions import (
-    InvalidTokenException, 
     ForbiddenException,
     NotAuthenticatedException
 )
-
 
 security = HTTPBearer()
 
@@ -21,7 +19,8 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     payload = verify_token(token)
     
     if payload is None:
-        raise InvalidTokenException()
+        # Заменили на существующий Exception
+        raise NotAuthenticatedException(detail="Invalid token")
         
     return payload
 
@@ -45,14 +44,15 @@ def require_role(required_role: str):
 
 
 async def require_admin(current_user: dict = Depends(get_current_user)) -> dict:
-    """зависимость, требующая роли администратора."""
+    """Зависимость, требующая роли администратора."""
     if current_user.get("role") != "admin":
         raise ForbiddenException(detail="Admin access required")
     return current_user
 
 
 async def require_operator_or_admin(current_user: dict = Depends(get_current_user)) -> dict:
-    """Зависимость, требующая роли оператора или администратора."""
+    """Зависимость, требующая роли оператора или администратора.
+    Для твоего проекта можно удалить или адаптировать, если нет роли 'operator'."""
     user_role = current_user.get("role")
     if user_role not in ["operator", "admin"]:
         raise ForbiddenException(detail="Operator or admin access required")

@@ -37,25 +37,6 @@ app.add_middleware(
     allow_headers=["*"],  
 )
 
-# тестовый эндпоинт
-@app.get("/health")
-async def health_check(db: AsyncSession = Depends(get_db)):
-    """Проверка здоровья приложения"""
-    try:
-        await db.execute(text("SELECT 1")) # Тестовый запрос для проверки БД
-        
-        return {
-            "status": "healthy",
-            "database": "connected",
-            "environment": "development",
-            "timestamp": datetime.utcnow().isoformat(),
-        }
-    except Exception as e:
-        return {
-            "status": "unhealthy",
-            "database": "disconnected",
-            "error": str(e)
-        }
 
 # Корневая точка с приветственным сообщением
 @app.get("/")
@@ -93,9 +74,8 @@ async def config_test():
 
 
 # Подключаем роутеры
-from app.routers import users, tickets, auth, admin
+from app.routers import users, auth, admin
 
 app.include_router(users.router, prefix="/api")
-app.include_router(tickets.router, prefix="/api")
 app.include_router(auth.router, prefix="/auth") 
 app.include_router(admin.router, prefix="/api")

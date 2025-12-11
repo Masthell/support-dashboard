@@ -21,7 +21,7 @@
   height: 80px;
   padding: 0;
   margin-bottom: 1.5rem;
-  filter: drop-shadow(0 0 1em #646cffaa);
+  filter: drop-shadow(0 0 1em #1f5622);
 }
 
 .logo-section h1 {
@@ -29,8 +29,8 @@
   line-height: 1.1;
   margin-bottom: 0.5rem;
   color: white;
-  box-sizing: content-box; 
-  white-space: nowrap; 
+  box-sizing: content-box;
+  white-space: nowrap;
 }
 
 .subtitle {

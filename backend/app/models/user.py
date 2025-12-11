@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, String, DateTime, func
-from sqlalchemy.orm import relationship
 from . import Base 
 
 class User(Base):
@@ -13,6 +12,3 @@ class User(Base):
     full_name = Column(String(255), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    
-    # Связь с тикетами (ленивая загрузка)
-    tickets = relationship("Ticket", back_populates="user", cascade="all, delete-orphan")

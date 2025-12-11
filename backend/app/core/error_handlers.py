@@ -39,7 +39,6 @@ def setup_exception_handlers(app: FastAPI):
             "Invalid token": "INVALID_TOKEN", 
             "Forbidden": "FORBIDDEN",
             "User not found": "USER_NOT_FOUND",
-            "Ticket not found": "TICKET_NOT_FOUND",
             "Email already registered": "EMAIL_EXISTS",
             "Invalid credentials": "INVALID_CREDENTIALS"
         }

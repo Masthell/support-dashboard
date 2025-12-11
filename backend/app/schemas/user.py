@@ -7,8 +7,6 @@ from typing import Optional
 class UserRole(str, Enum):
     """Допустимые роли пользователей в системе"""
     USER = "user"
-    OPERATOR = "operator" 
-    MANAGER = "manager"
     ADMIN = "admin"
 
 

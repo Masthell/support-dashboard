@@ -11,6 +11,7 @@ function Register() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -24,6 +25,7 @@ function Register() {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setSuccess("");
 
     // Валидация
     if (formData.password !== formData.confirmPassword) {
@@ -50,9 +52,13 @@ function Register() {
       console.log("Ответ от регистрации:", response);
 
       if (response.id || response.email) {
-        console.log(" Регистрация успешна!", response);
-        alert(" Регистрация выполнена успешно! Теперь вы можете войти.");
-        window.location.href = "/login";
+        console.log("Регистрация успешна!", response);
+        setSuccess("Регистрация выполнена успешно! Теперь вы можете войти.");
+
+        // Переход на login через 1.5 секунды
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 1500);
       } else {
         setError("Неизвестный формат ответа от сервера");
       }
@@ -95,7 +101,7 @@ function Register() {
       <div className="register-content">
         <div className="logo-section">
           <img src="/vite.png" className="logo" alt="logo" />
-          <h1>Support Dashboard</h1>
+          <h1>Monitoring Control</h1>
           <p className="subtitle">Создайте свой аккаунт</p>
         </div>
 
@@ -152,6 +158,7 @@ function Register() {
             />
           </div>
 
+          {/* Ошибка */}
           {error && (
             <div
               style={{
@@ -164,6 +171,22 @@ function Register() {
               }}
             >
               {error}
+            </div>
+          )}
+
+          {/* Успех */}
+          {success && (
+            <div
+              style={{
+                color: "#33a728",
+                backgroundColor: "rgba(51, 167, 40, 0.1)",
+                padding: "0.75rem",
+                borderRadius: "8px",
+                marginBottom: "1rem",
+                border: "1px solid rgba(51, 167, 40, 0.3)",
+              }}
+            >
+              {success}
             </div>
           )}
 

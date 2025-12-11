@@ -40,15 +40,6 @@ class EmailAlreadyExistsException(ConflictException):
 class InvalidCredentialsException(UnauthorizedException):
     def __init__(self):
         super().__init__(detail="Invalid credentials", error_code="INVALID_CREDENTIALS")
-
-class TicketNotFoundException(NotFoundException):
-    def __init__(self):
-        super().__init__(detail="Ticket not found", error_code="TICKET_NOT_FOUND")
-
-class InvalidTokenException(UnauthorizedException):
-    def __init__(self):
-        super().__init__(detail="Invalid token", error_code="INVALID_TOKEN")
-
 class NotAuthenticatedException(UnauthorizedException):
     def __init__(self):
         super().__init__(detail="Not authenticated", error_code="NOT_AUTHENTICATED")
