@@ -8,7 +8,7 @@ function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(""); // новое состояние для успешного входа
+  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +35,7 @@ function Login() {
 
         // Переход через 1.5 секунды
         setTimeout(() => {
-          window.location.href = "/dashboard";
+          window.location.href = "/monitoring";
         }, 1500);
       } else {
         setError(response.detail || "Ошибка входа");

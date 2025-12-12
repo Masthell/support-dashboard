@@ -12,7 +12,7 @@ async def require_admin(current_user: dict) -> None:
         raise HTTPException(403, "Admin access required")
 
 
-@router.get("/admin/dashboard")
+@router.get("/admin/monitoring")
 async def admin_dashboard(current_user: dict = Depends(get_current_user)):
     """Панель администратора с обзором системы."""
     await require_admin(current_user)
